@@ -1,0 +1,4 @@
+Sample Flow:
+
+Click Square.
+Calls game's validate move method. Passes square index.
