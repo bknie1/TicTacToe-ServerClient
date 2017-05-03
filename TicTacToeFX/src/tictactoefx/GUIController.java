@@ -9,13 +9,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import static tictactoefx.TicTacToeFX.game;
 //-----------------------------------------------------------------------------
 /**
  * FXML Controller class
  * @author Brandon K.
+ * Strictly deals with user interaction with the game GUI.
+ * Handles small negligible program actions like quitting.
+ * Defers to game when valid input is detected.
  */
 public class GUIController implements Initializable {
     @FXML
@@ -51,27 +53,22 @@ public class GUIController implements Initializable {
 //-----------------------------------------------------------------------------
     /**
      * Click --> Source --> move attempt.
+     * Uses a simple regex to isolate the clicked element id.
+     * Mostly as a proof of concept and to make the switch case pretty.
      */
     @FXML
     private void click_square(MouseEvent event) {
-        // Element ID regex: (t[\\d]\\w)
-//        String source = event.getSource().toString();
-//        Pattern pattern = Pattern.compile("(t[\\d]\\w)");
-//        Matcher id = pattern.matcher(source);
-//        System.out.println(id.);
-        
-        String source = event.getSource().toString();
-        Pattern patt = Pattern.compile("(t[\\d]\\w)");
-        Matcher matcher = patt.matcher(source);
-        if (matcher.find()) { source = matcher.group(); }
-        else { source = ""; }
-        System.out.println("Mouse pressed. Source: " + source);
-        
-        //try {
+        try {
+            // Element ID regex: (t[\\d]\\w)
+            String source = event.getSource().toString();
+            Pattern patt = Pattern.compile("(t[\\d]\\w)");
+            Matcher matcher = patt.matcher(source);
+            if (matcher.find()) { source = matcher.group(); }
+            else { source = ""; }
+            System.out.println("Mouse pressed. Source: " + source);
+
             int move_state = 2;
             int square = 0;
-            //String source = event.getSource().toString(); // Click location.
-            //String[] sq = pressed.split("\\s*(img)/g"); // Isolating var. name.
             switch(source) {
                 case("t00"):
                     move(0);
@@ -104,34 +101,41 @@ public class GUIController implements Initializable {
                     System.out.println("Error: Invalid square.");
                     break;
             }
-        //}
-//        catch(Exception e) {
-//            System.out.println("Error: Invalid move.");  
-//        }
+        }
+        catch(Exception e) {
+            throw_error(System.out, "Invalid move."); 
+        }
     }
 //-----------------------------------------------------------------------------
     /**
+     * Called by GUIController click_square().
      * Defers to game to check the validity of the move before making changes.
+     *  * Game move() returns a state to the GUIController to make GUI changes.
+     *      The GUIController will react accordingly:
+     *      0 == Positive 'X' move. Will display 'X'.
+     *      1 == Positive 'O' move. Will display 'O'.
+     *      2 == Illegal move. No change.
      */
     private void move(int square) {
         int move_state = 2;
-        move_state = game.move(square);
+        move_state = game.move(square); // Game validates the move.
         if(move_state != 2) {
-            switch(move_state) {
+            switch(move_state) {        // GUI reflects changes, if any.
                 case 0 :
-                    System.out.println("Changing image to 'O'.");
+                    System.out.println("Changing text to 'O'.");
                     set_symbol(square, 'O');
                     break;
                 case 1 :
-                    System.out.println("Changing image to 'X'.");
+                    System.out.println("Changing text to 'X'.");
                     set_symbol(square, 'X');
                     break;
             }
         }
-        else { System.out.println("Image remains unchanged."); }
+        else { System.out.println("Text remains unchanged."); }
     }
 //-----------------------------------------------------------------------------
     /**
+     * Called by GUIController move().
      * Changes the appearance of the game board to reflect new moves.
      */
     private void set_symbol(int square, char symbol) {
@@ -139,7 +143,7 @@ public class GUIController implements Initializable {
             String current_sym = "-";
             if(symbol == 'O') { current_sym = "O"; }
             if(symbol == 'X') { current_sym = "X"; }
-            System.out.println("Changing square symbol.");
+            
             switch(square) {
                 case 0:
                     t00.setText(current_sym);
@@ -169,6 +173,7 @@ public class GUIController implements Initializable {
                     t22.setText(current_sym);
                     break;
             }
+            System.out.println("Text changed.");
         //} catch (Exception e) { throw_error(System.out, "Image loading."); }
     }
 //-----------------------------------------------------------------------------
@@ -178,6 +183,11 @@ public class GUIController implements Initializable {
         System.exit(0);
     }
 //-----------------------------------------------------------------------------
+    /**
+     * General error handling.
+     * @param ps Error print destination.
+     * @param error The error itself.
+     */
     private void throw_error(PrintStream ps, String error) {
         ps.println("Error: " + error);
     }
