@@ -1,20 +1,16 @@
 package tictactoefx;
 //-----------------------------------------------------------------------------
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javax.imageio.ImageIO;
+import javafx.scene.text.Text;
 import static tictactoefx.TicTacToeFX.game;
 //-----------------------------------------------------------------------------
 /**
@@ -23,45 +19,27 @@ import static tictactoefx.TicTacToeFX.game;
  */
 public class GUIController implements Initializable {
     @FXML
-    private MenuItem mi_connect;
+    private MenuItem miconnect;
     @FXML
-    private MenuItem mi_quit;
+    private MenuItem miquit;
     @FXML
-    private Pane sq_0_0;
+    private Text t00;
     @FXML
-    private ImageView img_0_0;
+    private Text t01;
     @FXML
-    private Pane sq_0_1;
+    private Text t02;
     @FXML
-    private ImageView img_0_1;
+    private Text t10;
     @FXML
-    private Pane sq_0_2;
+    private Text t11;
     @FXML
-    private ImageView img_0_2;
+    private Text t12;
     @FXML
-    private Pane sq_1_0;
+    private Text t20;
     @FXML
-    private ImageView img_1_0;
+    private Text t21;
     @FXML
-    private Pane sq_1_1;
-    @FXML
-    private ImageView img_1_1;
-    @FXML
-    private Pane sq_1_2;
-    @FXML
-    private ImageView img_1_2;
-    @FXML
-    private Pane sq_2_0;
-    @FXML
-    private ImageView img_2_0;
-    @FXML
-    private Pane sq_2_1;
-    @FXML
-    private ImageView img_2_1;
-    @FXML
-    private Pane sq_2_2;
-    @FXML
-    private ImageView img_2_2;
+    private Text t22;
 //-----------------------------------------------------------------------------
     /**
      * Initializes the controller class.
@@ -76,39 +54,50 @@ public class GUIController implements Initializable {
      */
     @FXML
     private void click_square(MouseEvent event) {
-
-        System.out.println("Mouse pressed.");
+        // Element ID regex: (t[\\d]\\w)
+//        String source = event.getSource().toString();
+//        Pattern pattern = Pattern.compile("(t[\\d]\\w)");
+//        Matcher id = pattern.matcher(source);
+//        System.out.println(id.);
+        
+        String source = event.getSource().toString();
+        Pattern patt = Pattern.compile("(t[\\d]\\w)");
+        Matcher matcher = patt.matcher(source);
+        if (matcher.find()) { source = matcher.group(); }
+        else { source = ""; }
+        System.out.println("Mouse pressed. Source: " + source);
+        
         //try {
             int move_state = 2;
             int square = 0;
-            String source = event.getSource().toString(); // Click location.
+            //String source = event.getSource().toString(); // Click location.
             //String[] sq = pressed.split("\\s*(img)/g"); // Isolating var. name.
             switch(source) {
-                case("ImageView[id=img_0_0, styleClass=image-view]"):
+                case("t00"):
                     move(0);
                     break;
-                case("ImageView[id=img_0_1, styleClass=image-view]"):
+                case("t01"):
                     move(1);
                     break;
-                case("ImageView[id=img_0_2, styleClass=image-view]"):
+                case("t02"):
                     move(2);
                     break;
-                case("ImageView[id=img_1_0, styleClass=image-view]"):
+                case("t10"):
                     move(3);
                     break;
-                case("ImageView[id=img_1_1, styleClass=image-view]"):
+                case("t11"):
                     move(4);
                     break;
-                case("ImageView[id=img_1_2, styleClass=image-view]"):
+                case("t12"):
                     move(5);
                     break;
-                case("ImageView[id=img_2_0, styleClass=image-view]"):
+                case("t20"):
                     move(6);
                     break;
-                case("ImageView[id=img_2_1, styleClass=image-view]"):
+                case("t21"):
                     move(7);
                     break;
-                case("ImageView[id=img_2_2, styleClass=image-view]"):
+                case("t22"):
                     move(8);
                     break;
                 default :
@@ -147,37 +136,37 @@ public class GUIController implements Initializable {
      */
     private void set_symbol(int square, char symbol) {
         //try {
-            ImageView current_img = null;
-            if(symbol == 'O') { current_img = new ImageView("O.png"); }
-            if(symbol == 'X') { current_img = new ImageView("X.png"); }
+            String current_sym = "-";
+            if(symbol == 'O') { current_sym = "O"; }
+            if(symbol == 'X') { current_sym = "X"; }
             System.out.println("Changing square symbol.");
             switch(square) {
                 case 0:
-                    img_0_0 = current_img;
+                    t00.setText(current_sym);
                     break;
                 case 1:
-                    img_0_1 = current_img;
+                    t01.setText(current_sym);
                     break;
                 case 2:
-                    img_0_2 = current_img;
+                    t02.setText(current_sym);
                     break;
                 case 3:
-                    img_1_0 = current_img;
+                    t10.setText(current_sym);
                     break;
                 case 4:
-                    img_1_1 = current_img;
+                    t11.setText(current_sym);
                     break;
                 case 5:
-                    img_1_2 = current_img;
+                    t12.setText(current_sym);
                     break;
                 case 6:
-                    img_2_0 = current_img;
+                    t20.setText(current_sym);
                     break;
                 case 7:
-                    img_2_1 = current_img;
+                    t21.setText(current_sym);
                     break;
                 case 8:
-                    img_2_2 = current_img;
+                    t22.setText(current_sym);
                     break;
             }
         //} catch (Exception e) { throw_error(System.out, "Image loading."); }

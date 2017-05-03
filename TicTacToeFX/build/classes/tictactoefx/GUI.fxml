@@ -18,7 +18,7 @@
         <Menu mnemonicParsing="false" text="Menu">
           <items>
             <MenuItem fx:id="mi_connect" mnemonicParsing="false" text="Connect" />
-            <MenuItem fx:id="mi_quit" mnemonicParsing="false" text="Quit" onAction="#quit"/>
+            <MenuItem fx:id="mi_quit" mnemonicParsing="false" onAction="#quit" text="Quit" />
           </items>
         </Menu>
       </menus>
@@ -42,7 +42,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_0_0" fitHeight="150.0" fitWidth="200.0" layoutX="-18.0" layoutY="-12.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t00" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                   <Pane fx:id="sq_0_1" prefHeight="200.0" prefWidth="200.0" style="-fx-border: 5; -fx-border-color: WHITE; -fx-background-color: BLACK;" GridPane.columnIndex="1">
@@ -50,7 +54,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_0_1" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t01" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                   <Pane fx:id="sq_0_2" prefHeight="200.0" prefWidth="200.0" style="-fx-border: 5; -fx-border-color: WHITE; -fx-background-color: BLACK;" GridPane.columnIndex="2">
@@ -58,7 +66,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_0_2" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t02" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                   <Pane fx:id="sq_1_0" prefHeight="200.0" prefWidth="200.0" style="-fx-border: 5; -fx-border-color: WHITE; -fx-background-color: BLACK;" GridPane.rowIndex="1">
@@ -66,7 +78,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_1_0" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t10" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                   <Pane fx:id="sq_1_1" prefHeight="200.0" prefWidth="200.0" style="-fx-border: 5; -fx-border-color: WHITE; -fx-background-color: BLACK;" GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -74,7 +90,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_1_1" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t11" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                   <Pane fx:id="sq_1_2" prefHeight="200.0" prefWidth="200.0" style="-fx-border: 5; -fx-border-color: WHITE; -fx-background-color: BLACK;" GridPane.columnIndex="2" GridPane.rowIndex="1">
@@ -82,7 +102,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_1_2" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t12" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                   <Pane fx:id="sq_2_0" prefHeight="200.0" prefWidth="200.0" style="-fx-border: 5; -fx-border-color: WHITE; -fx-background-color: BLACK;" GridPane.rowIndex="2">
@@ -90,7 +114,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_2_0" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t20" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                   <Pane fx:id="sq_2_1" prefHeight="200.0" prefWidth="200.0" style="-fx-border: 5; -fx-border-color: WHITE; -fx-background-color: BLACK;" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -98,7 +126,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_2_1" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t21" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                   <Pane fx:id="sq_2_2" prefHeight="200.0" prefWidth="200.0" style="-fx-border: 5; -fx-border-color: WHITE; -fx-background-color: BLACK;" GridPane.columnIndex="2" GridPane.rowIndex="2">
@@ -106,7 +138,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <children>
-                        <ImageView fx:id="img_2_2" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#click_square" pickOnBounds="true" preserveRatio="true" />
+                        <Text fx:id="t22" fill="WHITE" layoutY="101.0" onMouseClicked="#click_square" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="134.0">
+                           <font>
+                              <Font size="110.0" />
+                           </font>
+                        </Text>
                      </children>
                   </Pane>
                </children>
