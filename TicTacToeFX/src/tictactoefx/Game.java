@@ -5,17 +5,19 @@ import java.io.PrintStream;
  * Game creates 1 Board, Board hosts 9 squares in an ArrayList.
  * Translates the interface into action. Game --> Board --> Squares.
  * Determines whether or not win/lose/draw conditions are met.
+ * Intermediary between the game logic and interface.
+ * May be used for later board scalability or additional game modes.
+ * i.e. Board constructors for Tic Tac Toe, or Connect 4.
  * @author Brandon K.
-
  */
 public class Game {
     public static Board board; // Global. One board per game. Comprised of squares.
     private static Boolean player_turn;
 //-----------------------------------------------------------------------------
     Game() {
-        this.board = new Board();
-        this.player_turn = true;
-        System.out.println("Starting game.");
+        Game.board = new Board(9);
+        Game.player_turn = true;
+        System.out.println("Starting new game.");
     }
 //-----------------------------------------------------------------------------
     /**
@@ -31,9 +33,9 @@ public class Game {
     * @param sq The target square.
     * @return Returns the state of the move for the GUI.
     */
-    public int move(int sq) {
+    protected int move(int sq) {
         boolean moved;
-        System.out.println("Validating on " + sq + ".");
+        //System.out.println("Validating on " + sq + ".");
         try {
             if(player_turn) { moved = board.move(sq, 'O'); }
             else { moved = board.move(sq, 'X'); }
@@ -45,7 +47,40 @@ public class Game {
         catch(Exception e) {
             throw_error(System.out, "Illegal move.");
         }
-        return -1; // Due diligence.
+        return -1; // All paths return regardless of likelihood.
+    }
+//-----------------------------------------------------------------------------
+    /**
+     * Defers to board to check the state of the game. Relays the data back
+     * to the GUIController for GUI modification.
+     * 0 - No end condition met. 3 in a row: False. Full: False.
+     * 1 - Winner. 3 in a row: True. Full: False.
+     * 2 - Draw. Full: True.
+     * @param symbol Most recently used symbol.
+     * @return The state of the game.
+     */
+    protected int game_state(char symbol) {
+        int state = board.game_state(symbol);
+        return state;
+    }
+//-----------------------------------------------------------------------------
+    /**
+     * Relays useful information about the game state.
+     * @param ps The output destination.
+     * @param state The numerical state of the game. To be translated.
+     */
+    private void print_state(PrintStream ps, int state) {
+        switch(state) {
+            case 0:
+                ps.println("The game continues.");
+                break;
+            case 1:
+                ps.println("Winner detected.");
+                break;
+            case 2:
+                ps.println("Draw detected.");
+                break;
+        }
     }
 //-----------------------------------------------------------------------------
     /**

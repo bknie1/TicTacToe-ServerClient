@@ -18,6 +18,7 @@
         <Menu mnemonicParsing="false" text="Menu">
           <items>
             <MenuItem fx:id="mi_connect" mnemonicParsing="false" text="Connect" />
+            <MenuItem fx:id="mi_reset" mnemonicParsing="false" onAction="#reset" text="Reset" />
             <MenuItem fx:id="mi_quit" mnemonicParsing="false" onAction="#quit" text="Quit" />
           </items>
         </Menu>

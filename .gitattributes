@@ -1,8 +1,6 @@
 *.java linguist-language=Java
 *.fxml linguist-language=FXML
 Documentation/* linguist-documentation
-TicTacToeFX/build/* linguist-documentation
-TicTacToeFX/dist/* linguist-documentation
 TicTacToeFX/nbproject/* linguist-documentation
 TicTacToeFX/resources/* linguist-documentation
 TicTacToeFX/test/* linguist-documentation

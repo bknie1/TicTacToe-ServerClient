@@ -17,13 +17,13 @@ public class TicTacToeFX extends Application {
     /**
     * Builds the GUI from the FXML file.
     * @param stage The JavaFX stage.
+    * @throws java.lang.Exception
     */
 //-----------------------------------------------------------------------------
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
         Scene scene = new Scene(root);
-        
         stage.setScene(scene);
         stage.setTitle("Tic Tac Toe");
         stage.show();
@@ -34,6 +34,13 @@ public class TicTacToeFX extends Application {
      */
     public static void main() {
         launch();
+    }
+//-----------------------------------------------------------------------------
+    /**
+     * Starts a new game.
+     */
+    static public void new_game() {
+        game = new Game();
     }
 //-----------------------------------------------------------------------------
     /**

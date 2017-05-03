@@ -1,0 +1,5 @@
+TicTacToeFX/dist/run* linguist-documentation
+TicTacToeFX/nbproject/* linguist-documentation
+TicTacToeFX/test/* linguist-documentation
+TicTacToeFX/build.xml linguist-documentation
+TicTacToeFX/manifest.mf linguist-documentation
