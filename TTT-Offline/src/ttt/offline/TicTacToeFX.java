@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 //-----------------------------------------------------------------------------
 /**
- * A simple, multiplayer Tic Tac Toe program in JavaFX.
+ * A simple, offline Tic Tac Toe program in JavaFX.
  * @author Brandon K.
  */
 public class TicTacToeFX extends Application {

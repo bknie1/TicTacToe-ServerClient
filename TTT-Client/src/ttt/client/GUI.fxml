@@ -11,12 +11,13 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox minWidth="400.0" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ttt.offline.GUIController">
+<VBox minWidth="400.0" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ttt.client.GUIController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="Menu">
           <items>
+             <MenuItem fx:id="mi_connect" mnemonicParsing="false" onAction="#connect" text="Connect" />
             <MenuItem fx:id="mi_reset" mnemonicParsing="false" onAction="#reset" text="Reset" />
             <MenuItem fx:id="mi_quit" mnemonicParsing="false" onAction="#quit" text="Quit" />
           </items>
