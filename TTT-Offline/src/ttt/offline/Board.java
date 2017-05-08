@@ -1,4 +1,4 @@
-package ttt.offline;
+package ttt.serverclient;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -76,11 +76,6 @@ public class Board {
      * |0|1|2|
      * |3|4|5|
      * |6|7|8|
-     * Or, if I have the time to go back and use a modulus, you might be looking
-     * at something like:
-     * |1|2|3|
-     * |4|5|6|
-     * |7|8|9|
      * Win/lose/draw detection. Sweeps the board for final plays.
      * Could use a Magic Square? Masking with parse int?
      * Quick and dirty: Exhaustive condition tree.
@@ -96,20 +91,16 @@ public class Board {
         boolean win = false;
         boolean full;
         // First Row
-        //System.out.println("\nRow 1 Cluster:"); // DEBUG
         for(int i = 0, w = 0; i <= 2; ++i) {
             status = squares.get(i).status;
             if(status == symbol) { ++w; }
             if(w == 3) { win = true; }
-            //System.out.print(" " + i); // DEBUG
         }
         // Second Row
-        //System.out.println("\nRow 2 Cluster:");
         for(int i = 3, w = 0; i <= 5; ++i) {
             status = squares.get(i).status;
             if(status == symbol) { ++w; }
             if(w == 3) { win = true; }
-            //System.out.print(" " + i); // DEBUG
         }
         // Third Row
         System.out.println("\nRow 3 Cluster:");
@@ -117,47 +108,36 @@ public class Board {
             status = squares.get(i).status;
             if(status == symbol) { ++w; }
             if(w == 3) { win = true; }
-            System.out.print(" " + i); // DEBUG
         }
         // First Column
-        //System.out.println("\nCol 1 Cluster:"); // DEBUG
         for(int i = 0, w = 0; i <= 6; i += 3) {
             status = squares.get(i).status;
             if(status == symbol) { ++w; }
             if(w == 3) { win = true; }
-            // System.out.print(" " + i); // DEBUG
         }
         // Second Column
-       //System.out.println("\nCol 2 Cluster:"); // DEBUG
         for(int i = 1, w = 0; i <= 7; i += 3) {
             status = squares.get(i).status;
             if(status == symbol) { ++w; }
             if(w == 3) { win = true; }
-            //System.out.print(" " + i);  // DEBUG
         }
         // Third Column
-        //System.out.println("\nCol 3 Cluster:"); // DEBUG
         for(int i = 2, w = 0; i <= 8; i += 3) {
             status = squares.get(i).status;
             if(status == symbol) { ++w; }
             if(w == 3) { win = true; }
-            //System.out.print(" " + i);  // DEBUG
         }
         // Left-Down Diagonal
-        //System.out.println("\nDiag 1 Cluster:"); // DEBUG
         for(int i = 0, w = 0; i <= 8; i += 4) {
             status = squares.get(i).status;
             if(status == symbol) { ++w; }
             if(w == 3) { win = true; }
-            //System.out.print(" " + i); // DEBUG
         }
         // Right-Down Diagonal
-        //System.out.println("\nDiag 2 Cluster:"); // DEBUG
         for(int i = 2, w = 0; i <= 6; i += 2) {
             status = squares.get(i).status;
             if(status == symbol) { ++w; }
             if(w == 3) { win = true; }
-            //System.out.print(" " + i); // DEBUG
         }
         //---------------------------------------
         full = fill_state(); // Checks board fill state.
@@ -177,10 +157,8 @@ public class Board {
     private boolean fill_state() {
         boolean fill_state = true;
         for(Square square : squares) {
-            // System.out.println(square.status); // DEBUG
             if(square.status == 'E') { fill_state = false; }
         }
-        //System.out.println("\nFull: " + fill_state); // DEBUG
         return fill_state;
     }
 //-----------------------------------------------------------------------------

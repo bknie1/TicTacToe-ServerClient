@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
+<?import javafx.scene.canvas.*?>
 <?import java.lang.*?>
-<?import java.util.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox minWidth="400.0" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ttt.offline.GUIController">
+<VBox minWidth="400.0" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tictactoe.GUIController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -149,5 +146,17 @@
             </GridPane>
          </children>
     </AnchorPane>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Pane prefHeight="25.0" prefWidth="400.0">
+               <children>
+                  <Text fx:id="t_output" layoutX="-4.0" layoutY="13.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="400.0" />
+               </children>
+            </Pane>
+         </children>
+         <VBox.margin>
+            <Insets left="5.0" right="5.0" />
+         </VBox.margin>
+      </AnchorPane>
   </children>
 </VBox>

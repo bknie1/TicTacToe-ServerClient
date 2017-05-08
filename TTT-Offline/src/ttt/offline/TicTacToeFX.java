@@ -1,4 +1,4 @@
-package ttt.offline;
+package ttt.serverclient;
 
 import java.io.PrintStream;
 import javafx.application.Application;

@@ -1,4 +1,4 @@
-package ttt.offline;
+package ttt.serverclient;
 //-----------------------------------------------------------------------------
 import javafx.scene.paint.Color;
 import java.io.PrintStream;
@@ -11,7 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import static ttt.offline.TicTacToeFX.game;
+import static ttt.serverclient.TicTacToeFX.game;
 //-----------------------------------------------------------------------------
 /**
  * FXML Controller class
@@ -204,19 +204,19 @@ public class GUIController implements Initializable {
         else { symbol = 'X'; }
         game_state = game.game_state(symbol);
         switch(game_state) {
-        case 0 : // No winner.
-            // System.out.println("No winner yet!"); // Optional
-            break;
-        case 1 : // A winner.
-            System.out.println(symbol + " wins!");
-            declare_winner(symbol);
-            game_over();
-            break;
-        case 2 : // Draw.
-            System.out.println("It was a draw.");
-            declare_draw();
-            game_over();
-            break;
+            case 0 : // No winner.
+                // System.out.println("No winner yet!"); // Optional
+                break;
+            case 1 : // A winner.
+                System.out.println(symbol + " wins!");
+                declare_winner(symbol);
+                game_over();
+                break;
+            case 2 : // Draw.
+                System.out.println("It was a draw.");
+                declare_draw();
+                game_over();
+                break;
         }
     }
 //-----------------------------------------------------------------------------
