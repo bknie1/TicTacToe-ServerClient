@@ -57,7 +57,7 @@ public class GUIController implements Initializable {
     //-------------------------------------------------------------------------
     public void connect() throws IOException {
         Game game = new Game();
-        game.run();
+        //game.run(); // UNNECESSARY. Implements runnable will do this automatically!
     }
     /**
      * Click --> Source --> move attempt.

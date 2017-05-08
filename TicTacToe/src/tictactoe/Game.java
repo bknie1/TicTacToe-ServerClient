@@ -63,7 +63,7 @@ public class Game implements Runnable {
         // Host game if none found.
         if(!connect_to_server()) { initialize_server(); }
         
-        thread = new Thread(this, "Game");
+        thread = new Thread(this, "TicTacToe");
         thread.start();
     }
     //--------------------------------------------------------------------------
@@ -73,7 +73,7 @@ public class Game implements Runnable {
     @Override
     public void run() {
         while(true) {
-            //tick();
+            tick();
             update_board();
             
             // If not server and no accepted client, host the game!
@@ -86,23 +86,28 @@ public class Game implements Runnable {
     //--------------------------------------------------------------------------
     private void tick() {
         // Terminates the game if too many errors have occurred.
+        System.out.println("Checking for excessive errors."); // DEBUG
         if(error_count >= 10) { comm_error = true; }
         
         // Check for a tie first to avoid conflict with a previous winner.
+        System.out.println("Checking fill state."); // DEBUG
         if(fill_state()) { TicTacToe.gui.declare_draw(); }
         
         // If the game is still going and not your turn.
         if(!player_turn && !comm_error) {
             try {
+                System.out.println("Making move."); // DEBUG
                 // Reads and places opponent move.
                 int square = dis.readInt();
                 if(server) board[square] = "X";
                 else board[square] = "O";
                 
                 // Update GUI
+                System.out.println("Updating GUI."); // DEBUG
                 update_board();
                 
                 // Check for opponent win condition.
+                System.out.println("Checking for win conditions."); // DEBUG
                 if(server) {
                     if(detect_win("X")) { TicTacToe.gui.declare_winner("X"); }
                 }
@@ -111,11 +116,13 @@ public class Game implements Runnable {
                 }
 
                 // Toggles the turn state so that the other player can move.
+                System.out.println("Toggling turn."); // DEBUG
                 player_turn = true;
                 
             } catch(IOException e) {
                 e.printStackTrace();
                 ++error_count;
+                System.out.println("Incrementing error counter."); // DEBUG
             }
         }
     }
@@ -126,9 +133,9 @@ public class Game implements Runnable {
      * continue playing the game.
      */
     private void server_request_listener() throws IOException {
-        Socket socket = null;
+        System.out.println("Listening for server request.");
         try {
-            socket = server_socket.accept();
+            socket = server_socket.accept(); // Supposed to wait here.
             dos = new DataOutputStream(socket.getOutputStream());
             dis = new DataInputStream(socket.getInputStream());
             client = true;
@@ -151,6 +158,7 @@ public class Game implements Runnable {
             return false;
         }
         System.out.println("Client connected to the server.");
+        TicTacToe.gui.print("Connected to the server.");
         return true;
     }
     //--------------------------------------------------------------------------
@@ -160,8 +168,10 @@ public class Game implements Runnable {
      */
     private void initialize_server() {
         try {
-            System.out.println("Initializing server.");
+            System.out.println("Initializing server."); // DEBUG
             server_socket = new ServerSocket(port, 8, InetAddress.getByName(address));
+            System.out.println("Server initialized."); // DEBUG
+            TicTacToe.gui.print("Hosting the server.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -206,15 +216,10 @@ public class Game implements Runnable {
     private void update_board() {
         for(int i = 0; i < board.length; ++i) {
             if(board[i] == "X") {
-                if(server) TicTacToe.gui.set(i, "X", Color.RED);
-                else TicTacToe.gui.set(i, "X", Color.CYAN);
+                TicTacToe.gui.set(i, "X", Color.RED);
             }
             if(board[i] == "O") {
-                if(server) TicTacToe.gui.set(i, "O", Color.CYAN);
-                else TicTacToe.gui.set(i, "O", Color.RED);
-            }
-            else {
-                TicTacToe.gui.set(i, "-", Color.DARKGREY);
+                TicTacToe.gui.set(i, "O", Color.CYAN);
             }
         }
     }
