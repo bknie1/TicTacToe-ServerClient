@@ -4,6 +4,8 @@ import java.awt.HeadlessException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -15,20 +17,22 @@ public class Game implements Runnable {
 
     //NETWORK
     private String address = "localhost";   // Designated IP.
-    private int port;                       // Designated port.
-    public Socket socket;                  // Endpoint for client comms.
-    public ServerSocket server_socket;     // Endpoint for server comms.
+    private int port = 9909;                // Designated port.
+    public Socket socket;                   // Endpoint for client comms.
+    public ServerSocket server_socket;      // Endpoint for server comms.
     private DataInputStream dis;            // Connection input data.
     private DataOutputStream dos;           // Connection output data.
 
     //LOGIC
-    private boolean player_turn;            // Local player's turn.
     private String[] board = new String[9]; // A board of 9 squares.
-    private boolean is_server = false;      // Circle serves as the default host.
-    private boolean client_accepted = false;// Has a client been accepted?
-    private boolean comm_error = false;     // Communications error flag.
+    
+    private boolean player_turn = false;    // Local player's turn.
+    private boolean server = true;          // Circle serves as the default host.
+    private boolean client = false;         // Has a client been accepted?
     private boolean is_winner;              // Did the local player win?
     private boolean is_loser;               // Has the opponent won?
+    private boolean comm_error = false;     // Communications error flag.
+    
     private int error_count = 0;            // >= 10 errors? Terminate game.
 
     private Thread thread;
@@ -40,17 +44,27 @@ public class Game implements Runnable {
      *      b. If host, connect to host and begin game.
      */
     Game() throws IOException {
-        port = 9099;
         try {
-            address = "127.0.0.1";
-            //address = JOptionPane.showInputDialog("Enter IP: ");
-            System.out.println("IP entered: " + address);
-            socket = new Socket(address, port);
-            System.out.println("Client sending request : " + socket.getInetAddress());
+            // Request Address from User
+            while(true) {
+                address = JOptionPane.showInputDialog(
+                        "Enter IP: ");
+                String p = JOptionPane.showInputDialog(
+                        "Enter Port (1024 - 65535): ");
+                port = Integer.parseInt(p);
+                System.out.println("Entered address: " + address + ":" + port);
+                if(port > 1024 && port < 65535) { break; }
+                System.out.println("Invalid address. Please try again.");
+            }
         } catch(HeadlessException | NumberFormatException e) { 
             System.out.println("Error: " + e);
         }
-        TicTacToe.gui.print("Valid address configuration.");
+        
+        // Host game if none found.
+        if(!connect_to_server()) { initialize_server(); }
+        
+        thread = new Thread(this, "Game");
+        thread.start();
     }
     //--------------------------------------------------------------------------
     /**
@@ -59,15 +73,13 @@ public class Game implements Runnable {
     @Override
     public void run() {
         while(true) {
-            tick();
+            //tick();
             update_board();
+            
             // If not server and no accepted client, host the game!
-            if(!is_server && !client_accepted) {
-                try {
-                    server_request_listener();
-                } catch (IOException ex) {
-                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            if(!server && !client) {
+                try { server_request_listener(); }
+                catch (IOException e) { e.printStackTrace(); }
             }
         }
     }
@@ -84,14 +96,14 @@ public class Game implements Runnable {
             try {
                 // Reads and places opponent move.
                 int square = dis.readInt();
-                if(is_server) board[square] = "X";
+                if(server) board[square] = "X";
                 else board[square] = "O";
                 
                 // Update GUI
                 update_board();
                 
                 // Check for opponent win condition.
-                if(is_server) {
+                if(server) {
                     if(detect_win("X")) { TicTacToe.gui.declare_winner("X"); }
                 }
                 else {
@@ -109,43 +121,52 @@ public class Game implements Runnable {
     }
     //--------------------------------------------------------------------------
     /**
-     * For each existing item in board:
-     * Updates the board and sets colors according to player status.
-     * Deliberate use of a '==' instead of Equals to avoid issues with null.
+     * Listens for requests from potential clients.
+     * Accepts client connections. Once a connection is accepted we can
+     * continue playing the game.
      */
-    private void update_board() {
-        for(int i = 0; i < board.length; ++i) {
-            if(board[i] == "X") {
-                if(is_server) TicTacToe.gui.set(i, "X", Color.RED);
-                else TicTacToe.gui.set(i, "X", Color.CYAN);
-            }
-            if(board[i] == "O") {
-                if(is_server) TicTacToe.gui.set(i, "O", Color.CYAN);
-                else TicTacToe.gui.set(i, "O", Color.RED);
-            }
-            else {
-                TicTacToe.gui.set(i, "-", Color.DARKGREY);
-            }
+    private void server_request_listener() throws IOException {
+        Socket socket = null;
+        try {
+            socket = server_socket.accept();
+            dos = new DataOutputStream(socket.getOutputStream());
+            dis = new DataInputStream(socket.getInputStream());
+            client = true;
+            System.out.println("Client requesting connection."
+                             + "\nServer accepting connection.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+    //-------------------------------------------------------------------------
+    private boolean connect_to_server() {
+        try {
+            socket = new Socket(address, port);
+            dos = new DataOutputStream(socket.getOutputStream());
+            dis = new DataInputStream(socket.getInputStream());
+            client = true;
+        } catch (IOException e) {
+            System.out.println("Unable to connect to " + address + ":" + port
+                             + "\nStarting a server and waiting for client.");
+            return false;
+        }
+        System.out.println("Client connected to the server.");
+        return true;
     }
     //--------------------------------------------------------------------------
     /**
-     * Client becomes the game host (server).
-     * Server searches for incoming connection requests.
-     * The server socket will hang until a connection is made.
+     * User hosts the game server if a server was not found.
+     * Attempts to assign the input address to the local server.
      */
-    private void server_request_listener() throws IOException {
-        TicTacToe.gui.print("No game detected. Hosting game.");
+    private void initialize_server() {
         try {
-            System.out.println("Server is listening on port ================ 9090");
-            server_socket = new ServerSocket(port);
-            socket = server_socket.accept(); // Blocks until something returns.
-            dis = new DataInputStream(socket.getInputStream());
-            dos = new DataOutputStream(socket.getOutputStream());
-            client_accepted = true;
-            is_server = true;
-            TicTacToe.gui.print("Client detected.");
-        } catch(IOException e) { e.printStackTrace(); }
+            System.out.println("Initializing server.");
+            server_socket = new ServerSocket(port, 8, InetAddress.getByName(address));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        player_turn = true; // Host always plays first.
+        server = false;     // Start listening for a client. We no longer need a server.
     }
     //--------------------------------------------------------------------------
     /**
@@ -175,6 +196,27 @@ public class Game implements Runnable {
             if(board[i] == null) { return false; }
         }
         return true;
+    }
+    //--------------------------------------------------------------------------
+    /**
+     * For each existing item in board:
+     * Updates the board and sets colors according to player status.
+     * Deliberate use of a '==' instead of Equals to avoid issues with null.
+     */
+    private void update_board() {
+        for(int i = 0; i < board.length; ++i) {
+            if(board[i] == "X") {
+                if(server) TicTacToe.gui.set(i, "X", Color.RED);
+                else TicTacToe.gui.set(i, "X", Color.CYAN);
+            }
+            if(board[i] == "O") {
+                if(server) TicTacToe.gui.set(i, "O", Color.CYAN);
+                else TicTacToe.gui.set(i, "O", Color.RED);
+            }
+            else {
+                TicTacToe.gui.set(i, "-", Color.DARKGREY);
+            }
+        }
     }
     //--------------------------------------------------------------------------
 }
