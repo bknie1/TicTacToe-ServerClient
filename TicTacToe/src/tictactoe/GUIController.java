@@ -124,15 +124,10 @@ public class GUIController implements Initializable {
             try {
                     game.dos.writeInt(square);
                     game.dos.flush();
-            } catch (IOException e1) {
+            } catch (IOException e) {
                     ++game.error_count;
-                    e1.printStackTrace();
+                    e.printStackTrace();
             }
-
-            System.out.println("Move sent.");
-            if(game.detect_win("O"));
-            else if(game.detect_win("X")); { declare_winner("X"); }
-            if(game.fill_state()) { declare_draw(); }
         }
     }
 //-----------------------------------------------------------------------------
@@ -230,15 +225,15 @@ public class GUIController implements Initializable {
     }
 //-----------------------------------------------------------------------------
     public void clear_squares() {
-        t00.setText("");
-        t01.setText("");
-        t02.setText("");
-        t10.setText("");
-        t11.setText("");
-        t12.setText("");
-        t20.setText("");
-        t21.setText("");
-        t22.setText("");
+        t00.setText(" ");
+        t01.setText(" ");
+        t02.setText(" ");
+        t10.setText(" ");
+        t11.setText(" ");
+        t12.setText(" ");
+        t20.setText(" ");
+        t21.setText(" ");
+        t22.setText(" ");
     }
 //-----------------------------------------------------------------------------
     @FXML

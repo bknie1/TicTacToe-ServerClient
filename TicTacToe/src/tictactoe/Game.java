@@ -93,8 +93,16 @@ public class Game implements Runnable {
                 else board[square] = "O";
 
                 // Check for opponent win condition.
-                if(detect_win("X")) { TicTacToe.gui.declare_winner("X"); }
-                if(detect_win("O")) { TicTacToe.gui.declare_winner("O"); }
+                if(detect_win("X")) { 
+                    TicTacToe.gui.declare_winner("X");
+                    wipe_board();
+                    winner = true;
+                }
+                if(detect_win("O")) {
+                    TicTacToe.gui.declare_winner("O");
+                    wipe_board();
+                    loser = true;
+                }
                 
                 player_turn = true;
                 
@@ -206,6 +214,12 @@ public class Game implements Runnable {
     public boolean is_turn() {
         // Checks for move receipt criteria.
         return(client && player_turn && !comm_error && !winner && !loser);
+    }
+    //--------------------------------------------------------------------------
+    protected void wipe_board() {
+        for(int i = 0; i < board.length; ++i) {
+            board[i] = null;
+        }
     }
     //--------------------------------------------------------------------------
 }
