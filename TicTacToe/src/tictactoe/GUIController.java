@@ -44,6 +44,8 @@ public class GUIController implements Initializable {
     private Text t22;
     @FXML
     public Text t_output;
+    
+    Game game;
 //-----------------------------------------------------------------------------
     /**
      * Initializes the controller class.
@@ -56,7 +58,7 @@ public class GUIController implements Initializable {
     }
     //-------------------------------------------------------------------------
     public void connect() throws IOException {
-        Game game = new Game();
+        game = new Game();
         //game.run(); // UNNECESSARY. Implements runnable will do this automatically!
     }
     /**
@@ -74,40 +76,63 @@ public class GUIController implements Initializable {
         if (matcher.find()) { source = matcher.group(); }
         else { source = ""; }
         System.out.println("Mouse pressed. Source: " + source);
+       if(game.is_turn()) {
+            switch(source) {
+                case("t00"):
+                    assign_to_board(0);
+                    break;
+                case("t01"):
+                    assign_to_board(1);
+                    break;
+                case("t02"):
+                    assign_to_board(2);
+                    break;
+                case("t10"):
+                    assign_to_board(3);
+                    break;
+                case("t11"):
+                    assign_to_board(4);
+                    break;
+                case("t12"):
+                    assign_to_board(5);
+                    break;
+                case("t20"):
+                    assign_to_board(6);
+                    break;
+                case("t21"):
+                    assign_to_board(7);
+                    break;
+                case("t22"):
+                    assign_to_board(8);
+                    break;
+            }
+        }
+    }
+//-----------------------------------------------------------------------------
+    /**
+     * I'm not happy with how heavily this is reaching into game.
+     * But it seems to be the only way to use FXML.
+     * @param square 
+     */
+    private void assign_to_board(int square) {
+        // If assignment can occur...
+        if(game.board[square] == null) {
+            if (!game.circle) game.board[square] = "X";
+            else game.board[square] = "O";
+            game.player_turn = false;
 
-        int move_state = 2;
-        int square = 0;
-        switch(source) {
-            case("t00"):
+            try {
+                    game.dos.writeInt(square);
+                    game.dos.flush();
+            } catch (IOException e1) {
+                    ++game.error_count;
+                    e1.printStackTrace();
+            }
 
-                break;
-            case("t01"):
-
-                break;
-            case("t02"):
-
-                break;
-            case("t10"):
-
-                break;
-            case("t11"):
-
-                break;
-            case("t12"):
-
-                break;
-            case("t20"):
-
-                break;
-            case("t21"):
-
-                break;
-            case("t22"):
-
-                break;
-            default :
-                System.out.println("Error: Invalid square.");
-                break;
+            System.out.println("Move sent.");
+            if(game.detect_win("O"));
+            else if(game.detect_win("X")); { declare_winner("X"); }
+            if(game.fill_state()) { declare_draw(); }
         }
     }
 //-----------------------------------------------------------------------------

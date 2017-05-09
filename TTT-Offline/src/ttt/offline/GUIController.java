@@ -1,4 +1,4 @@
-package ttt.serverclient;
+package ttt.offline;
 //-----------------------------------------------------------------------------
 import javafx.scene.paint.Color;
 import java.io.PrintStream;
@@ -11,7 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import static ttt.serverclient.TicTacToeFX.game;
+import static ttt.offline.TicTacToeFX.game;
 //-----------------------------------------------------------------------------
 /**
  * FXML Controller class

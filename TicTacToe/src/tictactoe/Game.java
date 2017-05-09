@@ -1,15 +1,11 @@
 package tictactoe;
 
-import java.awt.HeadlessException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.paint.Color;
 import javax.swing.JOptionPane;
 //------------------------------------------------------------------------------
@@ -21,19 +17,19 @@ public class Game implements Runnable {
     public Socket socket;                   // Endpoint for client comms.
     public ServerSocket server_socket;      // Endpoint for server comms.
     private DataInputStream dis;            // Connection input data.
-    private DataOutputStream dos;           // Connection output data.
+    protected DataOutputStream dos;           // Connection output data.
 
     //LOGIC
-    private String[] board = new String[9]; // A board of 9 squares.
+    protected String[] board = new String[9]; // A board of 9 squares.
     
-    private boolean player_turn = false;    // Local player's turn.
-    private boolean server = true;          // Circle serves as the default host.
+    protected boolean player_turn = false;    // Local player's turn.
+    protected boolean circle = true;          // X or O.
     private boolean client = false;         // Has a client been accepted?
-    private boolean is_winner;              // Did the local player win?
-    private boolean is_loser;               // Has the opponent won?
-    private boolean comm_error = false;     // Communications error flag.
+    protected boolean winner;              // Did the local player win?
+    protected boolean loser;               // Has the opponent won?
+    protected boolean comm_error = false;     // Communications error flag.
     
-    private int error_count = 0;            // >= 10 errors? Terminate game.
+    protected int error_count = 0;            // >= 10 errors? Terminate game.
 
     private Thread thread;
     //--------------------------------------------------------------------------
@@ -44,26 +40,27 @@ public class Game implements Runnable {
      *      b. If host, connect to host and begin game.
      */
     Game() throws IOException {
-        try {
-            // Request Address from User
-            while(true) {
-                address = JOptionPane.showInputDialog(
-                        "Enter IP: ");
-                String p = JOptionPane.showInputDialog(
-                        "Enter Port (1024 - 65535): ");
-                port = Integer.parseInt(p);
-                System.out.println("Entered address: " + address + ":" + port);
-                if(port > 1024 && port < 65535) { break; }
-                System.out.println("Invalid address. Please try again.");
-            }
-        } catch(HeadlessException | NumberFormatException e) { 
-            System.out.println("Error: " + e);
-        }
+        // USE DEFAULT FOR DEBUGGING
+//        try {
+//            // Request Address from User
+//            while(true) {
+//                address = JOptionPane.showInputDialog(
+//                        "Enter IP: ");
+//                String p = JOptionPane.showInputDialog(
+//                        "Enter Port (1024 - 65535): ");
+//                port = Integer.parseInt(p);
+//                System.out.println("Entered address: " + address + ":" + port);
+//                if(port > 1024 && port < 65535) { break; }
+//                System.out.println("Invalid address. Please try again.");
+//            }
+//        } catch(HeadlessException | NumberFormatException e) { 
+//            System.out.println("Error: " + e);
+//        }
         
         // Host game if none found.
         if(!connect_to_server()) { initialize_server(); }
         
-        thread = new Thread(this, "TicTacToe");
+        thread = new Thread(this, "Game");
         thread.start();
     }
     //--------------------------------------------------------------------------
@@ -77,7 +74,7 @@ public class Game implements Runnable {
             update_board();
             
             // If not server and no accepted client, host the game!
-            if(!server && !client) {
+            if(!circle && !client) {
                 try { server_request_listener(); }
                 catch (IOException e) { e.printStackTrace(); }
             }
@@ -86,43 +83,24 @@ public class Game implements Runnable {
     //--------------------------------------------------------------------------
     private void tick() {
         // Terminates the game if too many errors have occurred.
-        System.out.println("Checking for excessive errors."); // DEBUG
         if(error_count >= 10) { comm_error = true; }
-        
-        // Check for a tie first to avoid conflict with a previous winner.
-        System.out.println("Checking fill state."); // DEBUG
-        if(fill_state()) { TicTacToe.gui.declare_draw(); }
         
         // If the game is still going and not your turn.
         if(!player_turn && !comm_error) {
             try {
-                System.out.println("Making move."); // DEBUG
-                // Reads and places opponent move.
                 int square = dis.readInt();
-                if(server) board[square] = "X";
+                if(circle) board[square] = "X";
                 else board[square] = "O";
-                
-                // Update GUI
-                System.out.println("Updating GUI."); // DEBUG
-                update_board();
-                
-                // Check for opponent win condition.
-                System.out.println("Checking for win conditions."); // DEBUG
-                if(server) {
-                    if(detect_win("X")) { TicTacToe.gui.declare_winner("X"); }
-                }
-                else {
-                    if(detect_win("O")) { TicTacToe.gui.declare_winner("O"); }
-                }
 
-                // Toggles the turn state so that the other player can move.
-                System.out.println("Toggling turn."); // DEBUG
+                // Check for opponent win condition.
+                if(detect_win("X")) { TicTacToe.gui.declare_winner("X"); }
+                if(detect_win("O")) { TicTacToe.gui.declare_winner("O"); }
+                
                 player_turn = true;
                 
             } catch(IOException e) {
                 e.printStackTrace();
                 ++error_count;
-                System.out.println("Incrementing error counter."); // DEBUG
             }
         }
     }
@@ -139,6 +117,7 @@ public class Game implements Runnable {
             dos = new DataOutputStream(socket.getOutputStream());
             dis = new DataInputStream(socket.getInputStream());
             client = true;
+            TicTacToe.gui.print("Hosting the server. Client connected.");
             System.out.println("Client requesting connection."
                              + "\nServer accepting connection.");
         } catch (IOException e) {
@@ -171,12 +150,12 @@ public class Game implements Runnable {
             System.out.println("Initializing server."); // DEBUG
             server_socket = new ServerSocket(port, 8, InetAddress.getByName(address));
             System.out.println("Server initialized."); // DEBUG
-            TicTacToe.gui.print("Hosting the server.");
+            TicTacToe.gui.print("Hosting the server. Waiting for connection.");
         } catch (IOException e) {
             e.printStackTrace();
         }
         player_turn = true; // Host always plays first.
-        server = false;     // Start listening for a client. We no longer need a server.
+        circle = false;     // Host is X.
     }
     //--------------------------------------------------------------------------
     /**
@@ -184,7 +163,7 @@ public class Game implements Runnable {
      * @param symbol
      * @return 
      */
-    private boolean detect_win(String symbol) {
+    protected boolean detect_win(String symbol) {
         return
             (board[0] == symbol && board[0] == board[1] && board[0] == board[2])
             ||(board[3] == symbol && board[3] == board[4] && board[3] == board[5])
@@ -201,7 +180,7 @@ public class Game implements Runnable {
      * If there's at least one empty square the method will return false.
      * @return Filled?
      */
-    private boolean fill_state() {
+    protected boolean fill_state() {
         for(int i = 0; i < board.length; ++i) {
             if(board[i] == null) { return false; }
         }
@@ -222,6 +201,11 @@ public class Game implements Runnable {
                 TicTacToe.gui.set(i, "O", Color.CYAN);
             }
         }
+    }
+    //--------------------------------------------------------------------------
+    public boolean is_turn() {
+        // Checks for move receipt criteria.
+        return(client && player_turn && !comm_error && !winner && !loser);
     }
     //--------------------------------------------------------------------------
 }
