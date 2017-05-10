@@ -75,7 +75,7 @@ public class Game implements Runnable {
             tick();
             update_board();
             
-            // If not server and no accepted client, host the game!
+            // If not server and no accepted client, host and look!
             if(!circle && !client) {
                 try { server_request_listener(); }
                 catch (IOException e) { e.printStackTrace(); }
