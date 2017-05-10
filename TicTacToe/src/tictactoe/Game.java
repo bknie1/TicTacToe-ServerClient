@@ -1,5 +1,6 @@
 package tictactoe;
 
+import java.awt.HeadlessException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class Game implements Runnable {
     
     protected boolean player_turn = false;    // Local player's turn.
     protected boolean circle = true;          // X or O.
-    private boolean client = false;         // Has a client been accepted?
+    protected boolean client = false;         // Has a client been accepted?
     protected boolean winner;              // Did the local player win?
     protected boolean loser;               // Has the opponent won?
     protected boolean comm_error = false;     // Communications error flag.
@@ -41,21 +42,22 @@ public class Game implements Runnable {
      */
     Game() throws IOException {
         // USE DEFAULT FOR DEBUGGING
-//        try {
-//            // Request Address from User
-//            while(true) {
-//                address = JOptionPane.showInputDialog(
-//                        "Enter IP: ");
-//                String p = JOptionPane.showInputDialog(
-//                        "Enter Port (1024 - 65535): ");
-//                port = Integer.parseInt(p);
-//                System.out.println("Entered address: " + address + ":" + port);
-//                if(port > 1024 && port < 65535) { break; }
-//                System.out.println("Invalid address. Please try again.");
-//            }
-//        } catch(HeadlessException | NumberFormatException e) { 
-//            System.out.println("Error: " + e);
-//        }
+        try {
+            // Request Address from User.
+            // Mac OS seems to have issues with JOptionPane?
+            while(true) {
+                address = JOptionPane.showInputDialog(
+                        "Enter IP: ");
+                String p = JOptionPane.showInputDialog(
+                        "Enter Port (1024 - 65535): ");
+                port = Integer.parseInt(p);
+                System.out.println("Entered address: " + address + ":" + port);
+                if(port > 1024 && port < 65535) { break; }
+                System.out.println("Invalid address. Please try again.");
+            }
+        } catch(HeadlessException | NumberFormatException e) { 
+            System.out.println("Error: " + e);
+        }
         
         // Host game if none found.
         if(!connect_to_server()) { initialize_server(); }
@@ -200,7 +202,7 @@ public class Game implements Runnable {
      * Updates the board and sets colors according to player status.
      * Deliberate use of a '==' instead of Equals to avoid issues with null.
      */
-    private void update_board() {
+    protected void update_board() {
         for(int i = 0; i < board.length; ++i) {
             if(board[i] == "X") {
                 TicTacToe.gui.set(i, "X", Color.RED);

@@ -75,8 +75,8 @@ public class GUIController implements Initializable {
         Matcher matcher = patt.matcher(source);
         if (matcher.find()) { source = matcher.group(); }
         else { source = ""; }
-        System.out.println("Mouse pressed. Source: " + source);
-       if(game.is_turn()) {
+        // Won't fire until game is made and it's the player's turn.
+        if(game != null && game.is_turn()) {
             switch(source) {
                 case("t00"):
                     assign_to_board(0);
@@ -107,6 +107,7 @@ public class GUIController implements Initializable {
                     break;
             }
         }
+        else System.out.println("Wait for your turn.");
     }
 //-----------------------------------------------------------------------------
     /**
@@ -120,13 +121,15 @@ public class GUIController implements Initializable {
             if (!game.circle) game.board[square] = "X";
             else game.board[square] = "O";
             game.player_turn = false;
-
             try {
-                    game.dos.writeInt(square);
-                    game.dos.flush();
+                game.dos.writeInt(square);
+                game.dos.flush();
+                game.update_board(); // Redundant, but mitigates missing draw issue.
+                if(game.loser && !game.circle) { declare_winner("O"); }
+                if(game.loser && game.circle) { declare_winner("X"); }
             } catch (IOException e) {
-                    ++game.error_count;
-                    e.printStackTrace();
+                ++game.error_count;
+                e.printStackTrace();
             }
         }
     }
