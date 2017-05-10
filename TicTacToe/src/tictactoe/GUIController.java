@@ -14,7 +14,6 @@ import javafx.scene.text.Text;
 //-----------------------------------------------------------------------------
 /**
  * FXML Controller class
- * @author Brandon K.
  * Strictly deals with user interaction with the game GUI.
  * Handles small negligible program actions like quitting.
  * Defers to game when valid input is detected.
@@ -125,8 +124,6 @@ public class GUIController implements Initializable {
                 game.dos.writeInt(square);
                 game.dos.flush();
                 game.update_board(); // Redundant, but mitigates missing draw issue.
-                if(game.loser && !game.circle) { declare_winner("O"); }
-                if(game.loser && game.circle) { declare_winner("X"); }
             } catch (IOException e) {
                 ++game.error_count;
                 e.printStackTrace();
@@ -182,6 +179,10 @@ public class GUIController implements Initializable {
         }
     }
 //-----------------------------------------------------------------------------
+    /**
+     * Draws the win condition on the board.
+     * @param symbol Declares winner by symbol.
+     */
     public void declare_winner(String symbol) {
         int white_queen = 0x2655;
         clear_squares();
@@ -213,6 +214,13 @@ public class GUIController implements Initializable {
         }
     }
 //-----------------------------------------------------------------------------
+    /**
+     * Draws the draw condition on the board.
+     * Implemented in the offline version but still requires implementation
+     * in the online version. Draw conditions aren't determined well because
+     * the game ceases to allow for one final tick.
+     * To be implemented later.
+     */
     public void declare_draw() {
         int white_queen = 0x2655;
         int black_queen = 0x265B;
@@ -227,6 +235,10 @@ public class GUIController implements Initializable {
         t12.setStrokeWidth(1);
     }
 //-----------------------------------------------------------------------------
+    /**
+     * Clears the GUI of symbols, but NOT the logic. That needs to be done
+     * in Game. Will be used in a future Reset function implementation.
+     */
     public void clear_squares() {
         t00.setText(" ");
         t01.setText(" ");
@@ -240,11 +252,18 @@ public class GUIController implements Initializable {
     }
 //-----------------------------------------------------------------------------
     @FXML
+    /**
+     * Terminates the client.
+     */
     private void quit() {
         System.out.println("Terminating application.");
         System.exit(0);
     }
     //-------------------------------------------------------------------------
+    /**
+     * Prints to the bottom text element on the GUI.
+     * Used for notifying player of certain conditions.
+     */
     public void print(String output) {
         t_output.setText(output);
     }

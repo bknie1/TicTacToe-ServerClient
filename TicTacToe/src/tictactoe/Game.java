@@ -7,58 +7,77 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 import javafx.scene.paint.Color;
 import javax.swing.JOptionPane;
 //------------------------------------------------------------------------------
+/**
+ * The Tic Tac Toe game logic class.
+ * Responsible for creating and sustaining network connections, determining the
+ * role of the client in the game, and whether or not win conditions have been
+ * met.
+ */
 public class Game implements Runnable {
 
     //NETWORK
-    private String address = "localhost";   // Designated IP.
-    private int port = 9909;                // Designated port.
-    public Socket socket;                   // Endpoint for client comms.
-    public ServerSocket server_socket;      // Endpoint for server comms.
-    private DataInputStream dis;            // Connection input data.
-    protected DataOutputStream dos;           // Connection output data.
+    private String address = "localhost";       // Designated IP.
+    private int port = 1337;                    // Designated port.
+    public Socket socket;                       // Endpoint for client comms.
+    public ServerSocket server_socket;          // Endpoint for server comms.
+    private DataInputStream dis;                // Connection input data.
+    protected DataOutputStream dos;             // Connection output data.
+    protected int error_count = 0;              // >= 10 errors? Terminate game.
 
     //LOGIC
-    protected String[] board = new String[9]; // A board of 9 squares.
+    protected String[] board = new String[9];   // A board of 9 squares.
+    protected boolean player_turn = false;      // Local player's turn.
+    protected boolean circle = true;            // X or O.
+    private boolean client = false;             // Has a client been accepted?
+    private boolean winner;                     // Did the local player win?
+    private boolean loser;                      // Has the opponent won?
+    private boolean comm_error = false;         // Communications error flag.
     
-    protected boolean player_turn = false;    // Local player's turn.
-    protected boolean circle = true;          // X or O.
-    protected boolean client = false;         // Has a client been accepted?
-    protected boolean winner;              // Did the local player win?
-    protected boolean loser;               // Has the opponent won?
-    protected boolean comm_error = false;     // Communications error flag.
-    
-    protected int error_count = 0;            // >= 10 errors? Terminate game.
-
     private Thread thread;
     //--------------------------------------------------------------------------
     /**
      * 1. Asks the user to enter a valid IP configuration.
+     *      a. Alternate input method per OS. Mac OS didn't like JOptionPane.
      * 2. Detects whether or not there is an existing host.
      *      a. If no host, become host.
      *      b. If host, connect to host and begin game.
      */
     Game() throws IOException {
-        // USE DEFAULT FOR DEBUGGING
         try {
             // Request Address from User.
-            // Mac OS seems to have issues with JOptionPane?
-            while(true) {
-                address = JOptionPane.showInputDialog(
+            String os = System.getProperty("os.name");
+            
+            // If Windows, JOptionPane prompt.
+            if(os.startsWith("Windows")) {
+                while(true) {
+                    if(os.startsWith("Windows")) {
+                        address = JOptionPane.showInputDialog(
                         "Enter IP: ");
-                String p = JOptionPane.showInputDialog(
+                        String p = JOptionPane.showInputDialog(
                         "Enter Port (1024 - 65535): ");
-                port = Integer.parseInt(p);
-                System.out.println("Entered address: " + address + ":" + port);
-                if(port > 1024 && port < 65535) { break; }
-                System.out.println("Invalid address. Please try again.");
+                        port = Integer.parseInt(p);
+                    }
+                    // If non-Windows Platform, simple console prompt.
+                    else {
+                        Scanner reader = new Scanner(System.in);
+                        System.out.print("Enter IP: ");
+                        address = reader.next();
+                        System.out.print("\nEnter Port (1024 - 65535): ");
+                        port = reader.nextInt();
+                    }
+                    
+                    System.out.println("Entered address: " + address + ":" + port);
+                    if(port > 1024 && port < 65535 && !address.equals("")) { break; }
+                    System.out.println("Invalid address. Please try again.");
+                }
             }
         } catch(HeadlessException | NumberFormatException e) { 
             System.out.println("Error: " + e);
         }
-        
         // Host game if none found.
         if(!connect_to_server()) { initialize_server(); }
         
@@ -83,6 +102,10 @@ public class Game implements Runnable {
         }
     }
     //--------------------------------------------------------------------------
+    /**
+     * Processes player turns and detects for win conditions.
+     * Flags for termination the game if too many errors have occurred.
+     */
     private void tick() {
         // Terminates the game if too many errors have occurred.
         if(error_count >= 10) { comm_error = true; }
@@ -135,6 +158,11 @@ public class Game implements Runnable {
         }
     }
     //-------------------------------------------------------------------------
+    /**
+     * Determines whether or not there is an existing game server.
+     * If there is no game server one will be initialized in another method.
+     * @return Was the user able to connect?
+     */
     private boolean connect_to_server() {
         try {
             socket = new Socket(address, port);
@@ -213,11 +241,20 @@ public class Game implements Runnable {
         }
     }
     //--------------------------------------------------------------------------
+    /**
+     * Checks for move receipt criteria. The player should not be able to make
+     * moves unless certain criteria are met. This mitigates a lot of the
+     * encapsulation concerns I had earlier.
+     * @return 
+     */
     public boolean is_turn() {
-        // Checks for move receipt criteria.
         return(client && player_turn && !comm_error && !winner && !loser);
     }
     //--------------------------------------------------------------------------
+    /**
+     * Resets the board for future games.
+     * This is called but not fully implemented from the consumer's POV (yet).
+     */
     protected void wipe_board() {
         for(int i = 0; i < board.length; ++i) {
             board[i] = null;
